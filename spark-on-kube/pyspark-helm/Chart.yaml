@@ -1,0 +1,8 @@
+apiVersion: v2
+appVersion: v1
+version: 1.0.0
+name: pyspark-app
+description: A Helm chart for PySpark
+maintainers:
+  - email: vladshipugin@gmail.com
+    name: v.shipugin

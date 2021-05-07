@@ -1,0 +1,4 @@
+# Default values for pyspark-helm
+
+executor:
+  instances: 1
