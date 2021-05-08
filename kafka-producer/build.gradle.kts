@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     application
     kotlin("jvm")
@@ -9,11 +7,7 @@ group = "ru.shipa"
 version = "1.0-SNAPSHOT"
 
 application {
-    mainClassName = "ru.shipa.kenobi.kafka.producer.KafkaProducerApp"
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+    mainClass.set("ru.shipa.kenobi.kafka.producer.KafkaProducerApp")
 }
 
 tasks.jar {
@@ -43,8 +37,8 @@ dependencies {
     implementation("org.apache.kafka:kafka-clients:2.6.0")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.11.3")
 
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+    testImplementation(kotlin("test"))
+    testImplementation(kotlin("kotlin-test-junit"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit5Version")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit5Version")

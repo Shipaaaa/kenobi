@@ -3,21 +3,21 @@ package ru.shipa.kafka.producer
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.slf4j.LoggerFactory
-import ru.shipa.core.entity.LogEntity
-import java.util.*
+import ru.shipa.core.entity.ImageEntity
+import java.io.File
 
 /**
  * Kafka producer. Sends data to Kafka.
  *
  * @author v.shipugin
  */
-class KafkaLogsProducer(
-    var producer: Producer<String, LogEntity>,
+class KafkaImagesProducer(
+    var producer: Producer<String, ImageEntity>,
     val keyGenerator: () -> String
 ) {
 
     companion object {
-        private const val TOPIC_NAME = "SYSLOG_TOPIC"
+        private const val TOPIC_NAME = "IMAGES_TOPIC"
     }
 
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -27,9 +27,9 @@ class KafkaLogsProducer(
      *
      * @param data list on logs from syslog
      */
-    fun sendData(data: List<String>) {
+    fun sendData(data: Sequence<File>) {
         data
-            .map { LogEntity.fromLine(it) }
+            .map { ImageEntity.fromFile(it) }
             .map { ProducerRecord(TOPIC_NAME, keyGenerator(), it) }
             .forEach { record ->
                 producer.send(record) { metadata, exception ->

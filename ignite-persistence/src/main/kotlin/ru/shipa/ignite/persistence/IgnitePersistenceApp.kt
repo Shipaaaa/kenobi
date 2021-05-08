@@ -7,7 +7,7 @@ import org.apache.ignite.cluster.ClusterState
 import org.apache.ignite.configuration.CacheConfiguration
 import org.apache.ignite.configuration.DataStorageConfiguration
 import org.apache.ignite.configuration.IgniteConfiguration
-import ru.shipa.core.entity.LogEntity
+import ru.shipa.core.entity.ImageEntity
 import ru.shipa.ignite.persistence.IgnitePersistenceApp.main
 
 /**
@@ -32,7 +32,7 @@ object IgnitePersistenceApp {
         }
 
         // Configuring the cache of received logs
-        val logsCacheCfg = CacheConfiguration<String, LogEntity>(DATA_CACHE_NAME).apply {
+        val logsCacheCfg = CacheConfiguration<String, ImageEntity>(DATA_CACHE_NAME).apply {
             cacheMode = CacheMode.REPLICATED
             atomicityMode = CacheAtomicityMode.ATOMIC
         }

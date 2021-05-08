@@ -3,12 +3,11 @@ package ru.shipa.kafka.producer
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringSerializer
-import ru.shipa.core.entity.LogEntity
-import ru.shipa.core.serializers.LogEntitySerializer
+import ru.shipa.core.entity.ImageEntity
+import ru.shipa.core.serializers.ImageEntitySerializer
 import ru.shipa.kafka.producer.KafkaProducerApp.main
 import java.io.File
 import java.util.*
-
 
 /**
  * Kafka application entry point.
@@ -20,37 +19,41 @@ object KafkaProducerApp {
 
     private val BOOTSTRAP_SERVERS_IP = System.getenv("KAFKA_BOOTSTRAP_SERVERS_IP") ?: "127.0.0.1:9092"
 
+    private const val MAX_REQUEST_SIZE = 10_000_000
+
     private val config = mapOf(
         ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to BOOTSTRAP_SERVERS_IP,
+        ProducerConfig.MAX_REQUEST_SIZE_CONFIG to MAX_REQUEST_SIZE,
 
         ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.name,
-        ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to LogEntitySerializer::class.java.name,
+        ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to ImageEntitySerializer::class.java.name,
     )
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val sysLogsPath = args[0]
-        val data = readFile(sysLogsPath)
-        val producer = KafkaProducer<String, LogEntity>(config)
+        val imgDirPath = args[0]
+        val data = readFiles(imgDirPath)
+        val producer = KafkaProducer<String, ImageEntity>(config)
 
-        with(KafkaLogsProducer(producer, keyGenerator = { UUID.randomUUID().toString() })) {
+        with(KafkaImagesProducer(producer, keyGenerator = { UUID.randomUUID().toString() })) {
             sendData(data)
             stop()
         }
     }
 
     /**
-     * Reading logs from file
+     * Reading images from directory.
      *
-     * @param sysLogsPath path to file with logs
+     * @param imgDirPath path to directory with images
      *
-     * @return list of log lines
+     * @return sequence of files
      */
-    private fun readFile(sysLogsPath: String): List<String> {
-        println("Reading file...")
+    private fun readFiles(imgDirPath: String): Sequence<File> {
+        println("Reading images...")
 
-        return File(sysLogsPath)
-            .useLines { it.toList() }
-            .also { sysLogs -> println("File:\n${sysLogs.firstOrNull()}\n...\n${sysLogs.lastOrNull()}\n") }
+        return File(imgDirPath)
+            .walkTopDown()
+            .filter { !it.isDirectory }
+            .apply { forEach { file -> println("Images name: ${file.name}") } }
     }
 }

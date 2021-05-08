@@ -7,10 +7,9 @@ import org.apache.ignite.stream.kafka.KafkaStreamer
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.LoggerFactory
-import ru.shipa.core.entity.LogEntity
-import ru.shipa.core.serializers.LogEntityDeserializer
+import ru.shipa.core.entity.ImageEntity
+import ru.shipa.core.serializers.ImageEntityDeserializer
 import ru.shipa.ignite.persistence.IgnitePersistenceApp.DATA_CACHE_NAME
-import java.util.*
 
 /**
  * Kafka consumer. Receives data from the Kafka producer.
@@ -22,9 +21,9 @@ class KafkaToIgniteStreamer(private val ignite: Ignite) {
     companion object {
         private val BOOTSTRAP_SERVERS_IP = System.getenv("KAFKA_BOOTSTRAP_SERVERS_IP") ?: "127.0.0.1:9092"
 
-        private const val TOPIC_NAME = "SYSLOG_TOPIC"
+        private const val TOPIC_NAME = "IMAGES_TOPIC"
 
-        private const val GROUP_ID = "SYSLOG_GROUP"
+        private const val GROUP_ID = "IMAGES_GROUP"
         private const val COMMIT_INTERVAL_MS = "1000"
     }
 
@@ -39,24 +38,24 @@ class KafkaToIgniteStreamer(private val ignite: Ignite) {
         ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG to COMMIT_INTERVAL_MS,
 
         ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java.name,
-        ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to LogEntityDeserializer::class.java.name
+        ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to ImageEntityDeserializer::class.java.name
     )
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    private lateinit var igniteDataStreamer: IgniteDataStreamer<String, LogEntity>
-    private lateinit var kafkaStreamer: KafkaStreamer<String, LogEntity>
+    private lateinit var igniteDataStreamer: IgniteDataStreamer<String, ImageEntity>
+    private lateinit var kafkaStreamer: KafkaStreamer<String, ImageEntity>
 
     /**
      * Stream initializing
      */
     fun init() {
-        igniteDataStreamer = ignite.dataStreamer<String, LogEntity>(DATA_CACHE_NAME).apply {
+        igniteDataStreamer = ignite.dataStreamer<String, ImageEntity>(DATA_CACHE_NAME).apply {
             allowOverwrite(true)
             autoFlushFrequency(30_000)
         }
 
-        kafkaStreamer = KafkaStreamer<String, LogEntity>().apply {
+        kafkaStreamer = KafkaStreamer<String, ImageEntity>().apply {
             ignite = this@KafkaToIgniteStreamer.ignite
             streamer = igniteDataStreamer
             setTopic(listOf(TOPIC_NAME))
@@ -65,8 +64,8 @@ class KafkaToIgniteStreamer(private val ignite: Ignite) {
 
             setSingleTupleExtractor { msg ->
                 val key = msg.key() as String
-                val value = msg.value() as LogEntity
-                logger.debug("record key: $key value: $value\n")
+                val value = msg.value() as ImageEntity
+                logger.debug("record key: $key value: ${value.name}\n")
 
                 IgniteBiTuple(key, value)
             }

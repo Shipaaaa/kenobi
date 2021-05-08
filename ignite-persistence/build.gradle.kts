@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     application
     kotlin("jvm")
@@ -9,11 +7,7 @@ group = "ru.shipa"
 version = "1.0-SNAPSHOT"
 
 application {
-    mainClassName = "ru.shipa.kenobi.ignite.persistence.IgnitePersistenceApp"
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+    mainClass.set("ru.shipa.kenobi.ignite.persistence.IgnitePersistenceApp")
 }
 
 tasks.jar {
@@ -36,7 +30,7 @@ repositories {
 }
 
 dependencies {
-    val igniteVersion = "2.9.0"
+    val igniteVersion = "2.9.1"
     val junit5Version = "5.0.2"
 
     implementation(project(":core"))
@@ -48,8 +42,8 @@ dependencies {
     implementation("org.apache.kafka:kafka-clients:2.6.0")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.11.3")
 
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+    testImplementation(kotlin("test"))
+    testImplementation(kotlin("kotlin-test-junit"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit5Version")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit5Version")
