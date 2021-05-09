@@ -14,5 +14,9 @@ ansible-playbook -i inventory/mycluster/hosts.yaml cluster.yml --become --become
 ```
 
 ```shell
-helm install spark-app spark-operator/spark-operator --namespace spark-operator --create-namespace --set sparkJobNamespace=default --set webhook.enable=true
+helm install spark-app ~/spark-operator --namespace spark-operator --create-namespace --set sparkJobNamespace=default --set webhook.enable=true
+```
+
+```shell
+./run-pyspark-helm.sh 5
 ```
