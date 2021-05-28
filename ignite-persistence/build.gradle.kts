@@ -1,21 +1,20 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
-    application
+    id("org.springframework.boot") version "2.4.5"
+    id("io.spring.dependency-management") version "1.0.11.RELEASE"
     kotlin("jvm")
+    kotlin("plugin.spring") version "1.4.32"
 }
 
 group = "ru.shipa"
 version = "1.0-SNAPSHOT"
 
-application {
-    mainClass.set("ru.shipa.kenobi.ignite.persistence.IgnitePersistenceApp")
-}
-
-tasks.jar {
-    manifest {
-        attributes("Main-Class" to "ru.shipa.kenobi.ignite.persistence.IgnitePersistenceApp")
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs = listOf("-Xjsr305=strict")
+        jvmTarget = "1.8"
     }
-
-    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
 }
 
 tasks.test {
@@ -35,7 +34,14 @@ dependencies {
 
     implementation(project(":core"))
 
+    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-integration")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+
     implementation("org.apache.ignite:ignite-core:$igniteVersion")
+    implementation("org.apache.ignite:ignite-spring:$igniteVersion")
+    implementation("org.apache.ignite:ignite-indexing:$igniteVersion")
+    implementation("org.apache.ignite:ignite-kubernetes:$igniteVersion")
     implementation("org.apache.ignite:ignite-kafka:$igniteVersion")
     implementation("org.apache.ignite:ignite-log4j2:$igniteVersion")
 
@@ -44,6 +50,8 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("kotlin-test-junit"))
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit5Version")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit5Version")

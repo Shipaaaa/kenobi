@@ -1,4 +1,4 @@
-package ru.shipa.ignite.persistence
+package ru.shipa.ignite.persistence.config
 
 import org.apache.ignite.Ignite
 import org.apache.ignite.IgniteDataStreamer
@@ -7,18 +7,24 @@ import org.apache.ignite.stream.kafka.KafkaStreamer
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Import
 import ru.shipa.core.entity.ImageEntity
 import ru.shipa.core.serializers.ImageEntityDeserializer
-import ru.shipa.ignite.persistence.IgnitePersistenceApp.DATA_CACHE_NAME
 
-/**
- * Kafka consumer. Receives data from the Kafka producer.
- *
- * @author v.shipugin
- */
-class KafkaToIgniteStreamer(private val ignite: Ignite) {
+@Configuration
+@Import(IgniteConf::class)
+class KafkaStreamerConf {
+
+    @Value("\${ignite.service.cacheName}")
+    private lateinit var cacheName: String
+
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     companion object {
+        // TODO Заменить spring value.
         private val BOOTSTRAP_SERVERS_IP = System.getenv("KAFKA_BOOTSTRAP_SERVERS_IP") ?: "127.0.0.1:9092"
 
         private const val TOPIC_NAME = "IMAGES_TOPIC"
@@ -41,22 +47,24 @@ class KafkaToIgniteStreamer(private val ignite: Ignite) {
         ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to ImageEntityDeserializer::class.java.name
     )
 
-    private val logger = LoggerFactory.getLogger(this::class.java)
-
-    private lateinit var igniteDataStreamer: IgniteDataStreamer<String, ImageEntity>
-    private lateinit var kafkaStreamer: KafkaStreamer<String, ImageEntity>
-
-    /**
-     * Stream initializing
-     */
-    fun init() {
-        igniteDataStreamer = ignite.dataStreamer<String, ImageEntity>(DATA_CACHE_NAME).apply {
+    @Bean
+    fun provideIgniteDataStreamer(
+        ignite: Ignite
+    ): IgniteDataStreamer<String, ImageEntity> {
+        return ignite.dataStreamer<String, ImageEntity>(cacheName).apply {
             allowOverwrite(true)
             autoFlushFrequency(30_000)
         }
+    }
 
-        kafkaStreamer = KafkaStreamer<String, ImageEntity>().apply {
-            ignite = this@KafkaToIgniteStreamer.ignite
+
+    @Bean
+    fun provideKafkaStreamer(
+        ignite: Ignite,
+        igniteDataStreamer: IgniteDataStreamer<String, ImageEntity>
+    ): KafkaStreamer<String, ImageEntity> {
+        return KafkaStreamer<String, ImageEntity>().apply {
+            this.ignite = ignite
             streamer = igniteDataStreamer
             setTopic(listOf(TOPIC_NAME))
             setThreads(4)
@@ -70,21 +78,5 @@ class KafkaToIgniteStreamer(private val ignite: Ignite) {
                 IgniteBiTuple(key, value)
             }
         }
-    }
-
-    /**
-     * Start getting logs
-     */
-    fun start() {
-        kafkaStreamer.start()
-    }
-
-    /**
-     * Stop getting logs
-     */
-    fun stop() {
-        kafkaStreamer.stop()
-        igniteDataStreamer.close()
-        ignite.close()
     }
 }
