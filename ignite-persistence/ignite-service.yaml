@@ -2,33 +2,34 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: ignite-service-config
-  namespace: default
+  namespace: ignite-client
 data:
   IGNITE_KUBER_MODE: 'true'
-  IGNITE_SERVICE_NAME: 'ignite'
-  IGNITE_NAMESPACE: 'default'
-  IGNITE_MASTER_URL: 'https://192.168.64.4:8443'
+  IGNITE_SERVICE_NAME: 'ignite-app'
+  IGNITE_NAMESPACE: 'ignite-client'
+  IGNITE_MASTER_URL: 'https://ignite-service.ignite-server.svc.cluster.local:443'
   IGNITE_CACHE_NAME: 'images-cache'
+  KAFKA_BOOTSTRAP_SERVERS_IP: '127.0.0.1:9092'
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ignite-service
-  namespace: default
+  name: ignite-app-service
+  namespace: ignite-client
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: ignite-cache
-  replicas: 1
   template:
     metadata:
       labels:
         app: ignite-cache
     spec:
-      serviceAccountName: ignite
+      serviceAccountName: ignite-app
       containers:
-        - name: ignite-service-container
-          image: "docker.io/mmrovnyagin/test-service:lab5"
+        - name: ignite-app-container
+          image: "docker.io/shipa/ignite-persistence:latest"
           resources:
             requests:
               memory: "600Mi"
@@ -36,13 +37,13 @@ spec:
             limits:
               memory: "700Mi"
               cpu: "500m"
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: ignite-service-config
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: 8080 # REST API
           readinessProbe:
             httpGet:
               path: /health
@@ -54,8 +55,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ignite
-  namespace: default
+  name: ignite-app
+  namespace: ignite-client
 spec:
   type: NodePort
   selector:

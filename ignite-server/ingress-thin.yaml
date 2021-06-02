@@ -2,16 +2,16 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: ignite-thin
-  namespace: fsp-ignite
+  namespace: ignite-server
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
-    rules:
-      - host: ignite-thin.fsp-ignite.lb.k8s-dt-irmg-01.k8s.mephi.ru
-        http:
-          paths:
-            - backend:
-                serviceName: ignite
-                servicePort: 10800
-              path: /
+  rules:
+    - host: ignite-thin.ignite-server.lb.k8s-dt-irmg-01.k8s.mephi.ru
+      http:
+        paths:
+          - backend:
+              serviceName: ignite
+              servicePort: 10800
+            path: /

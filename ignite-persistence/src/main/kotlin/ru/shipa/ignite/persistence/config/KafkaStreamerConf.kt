@@ -21,12 +21,12 @@ class KafkaStreamerConf {
     @Value("\${ignite.service.cacheName}")
     private lateinit var cacheName: String
 
+    @Value("\${kafka.bootstrap.serversIp}")
+    private lateinit var bootstrapServersIp: String
+
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     companion object {
-        // TODO Заменить spring value.
-        private val BOOTSTRAP_SERVERS_IP = System.getenv("KAFKA_BOOTSTRAP_SERVERS_IP") ?: "127.0.0.1:9092"
-
         private const val TOPIC_NAME = "IMAGES_TOPIC"
 
         private const val GROUP_ID = "IMAGES_GROUP"
@@ -36,16 +36,19 @@ class KafkaStreamerConf {
     /**
      * Kafka configuration definition
      */
-    private val kafkaConfig = mapOf(
-        ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to BOOTSTRAP_SERVERS_IP,
-        ConsumerConfig.GROUP_ID_CONFIG to GROUP_ID,
+    @Bean
+    fun provideKafkaConfig(): Map<String, String> {
+        return mapOf(
+            ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServersIp,
+            ConsumerConfig.GROUP_ID_CONFIG to GROUP_ID,
 
-        ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to "true",
-        ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG to COMMIT_INTERVAL_MS,
+            ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to "true",
+            ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG to COMMIT_INTERVAL_MS,
 
-        ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java.name,
-        ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to ImageEntityDeserializer::class.java.name
-    )
+            ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java.name,
+            ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to ImageEntityDeserializer::class.java.name
+        )
+    }
 
     @Bean
     fun provideIgniteDataStreamer(
@@ -57,11 +60,11 @@ class KafkaStreamerConf {
         }
     }
 
-
     @Bean
     fun provideKafkaStreamer(
         ignite: Ignite,
-        igniteDataStreamer: IgniteDataStreamer<String, ImageEntity>
+        igniteDataStreamer: IgniteDataStreamer<String, ImageEntity>,
+        kafkaConfig: Map<String, String>
     ): KafkaStreamer<String, ImageEntity> {
         return KafkaStreamer<String, ImageEntity>().apply {
             this.ignite = ignite

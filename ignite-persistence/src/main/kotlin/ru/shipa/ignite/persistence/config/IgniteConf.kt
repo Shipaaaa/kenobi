@@ -89,7 +89,7 @@ class IgniteConf {
             igniteInstanceName = instanceName.toString()
             isPeerClassLoadingEnabled = true
             dataStorageConfiguration = DataStorageConfiguration().apply {
-                defaultDataRegionConfiguration.isPersistenceEnabled = true
+//                defaultDataRegionConfiguration.isPersistenceEnabled = true
             }
 
             if (kuberMode) {

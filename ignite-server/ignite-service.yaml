@@ -2,9 +2,9 @@ apiVersion: v1
 kind: Service
 metadata:
   # The name must be equal to KubernetesConnectionConfiguration.serviceName
-  name: ignite
+  name: ignite-service
   # The name must be equal to KubernetesConnectionConfiguration.namespace
-  namespace: fsp-ignite
+  namespace: ignite-server
   labels:
     app: ignite
 spec:
@@ -29,4 +29,4 @@ spec:
     # Must be equal to the label set for pods.
     app: ignite
 status:
-  loadBalancer: {}
+  loadBalancer: { }

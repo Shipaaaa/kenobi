@@ -1,1 +1,1 @@
-kubectl create configmap ignite-config --from-file=node-configuration.xml --namespace=fsp-ignite
+kubectl create configmap ignite-config --namespace=ignite-server --from-file=ignite-node-configuration.xml
