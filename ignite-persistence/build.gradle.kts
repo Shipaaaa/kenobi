@@ -44,6 +44,7 @@ dependencies {
     implementation("org.apache.ignite:ignite-kubernetes:$igniteVersion")
     implementation("org.apache.ignite:ignite-kafka:$igniteVersion")
     implementation("org.apache.ignite:ignite-log4j2:$igniteVersion")
+    implementation("com.h2database:h2:1.4.197")
 
     implementation("org.apache.kafka:kafka-clients:2.6.0")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.11.3")

@@ -5,11 +5,11 @@ metadata:
   namespace: ignite
 data:
   IGNITE_KUBER_MODE: 'true'
-  IGNITE_NAMESPACE: 'ignite'
-  IGNITE_SERVICE_NAME: 'ignite-cluster'
-  IGNITE_MASTER_URL: 'https://kubernetes.default.svc.cluster.local:443'
+  IGNITE_SERVICE_NAME: 'ignite-service'
+  IGNITE_NAMESPACE: 'ignite-server'
+  IGNITE_MASTER_URL: 'https://127.0.0.1:6443'
   IGNITE_CACHE_NAME: 'images-cache'
-  KAFKA_BOOTSTRAP_SERVERS_IP: 'https://kafka-kafka-bootstrap.kafka.svc.cluster.local:9092'
+  KAFKA_BOOTSTRAP_SERVERS_IP: '127.0.0.1:9092'
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -26,17 +26,7 @@ spec:
       labels:
         app: ignite-client
     spec:
-      nodeSelector:
-        dedicated: master
-      tolerations:
-        - key: dedicated
-          operator: Equal
-          value: master
-          effect: NoSchedule
-        - key: node-role.kubernetes.io/master
-          operator: "Exists"
-          effect: NoSchedule
-      serviceAccountName: ignite-app-account
+      serviceAccountName: ignite-cluster-account
       containers:
         - name: ignite-app-container
           image: "docker.io/shipa/ignite-persistence:latest"

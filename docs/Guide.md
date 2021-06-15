@@ -47,7 +47,7 @@ export KAFKA_BOOTSTRAP_SERVERS_IP="127.0.0.1:9092"
 docker compose -f kafka-docker/docker-compose.yml up
 ```
 
-You can see details in [kafka-docker readme](../kafka-docker/README.md) or [kafka-docker guide](./docker_kafka_setup.md).
+You can see details in [kafka-docker readme](../kafka-docker/README.md) or [kafka-docker guide](../kafka-docker/docker_kafka_setup.md).
 
 #### Run ignite persistence module
 

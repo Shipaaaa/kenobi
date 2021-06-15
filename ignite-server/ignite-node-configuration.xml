@@ -5,16 +5,15 @@
         http://www.springframework.org/schema/beans/spring-beans.xsd">
     <bean class="org.apache.ignite.configuration.IgniteConfiguration">
 
+        <!-- Enable peer class loading. -->
+        <property name="peerClassLoadingEnabled" value="true"/>
+
         <property name="discoverySpi">
             <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
                 <property name="ipFinder">
                     <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.kubernetes.TcpDiscoveryKubernetesIpFinder">
-                        <constructor-arg>
-                            <bean class="org.apache.ignite.kubernetes.configuration.KubernetesConnectionConfiguration">
-                                <property name="namespace" value="ignite-server"/>
-                                <property name="serviceName" value="ignite-service"/>
-                            </bean>
-                        </constructor-arg>
+                        <property name="namespace" value="ignite"/>
+                        <property name="serviceName" value="ignite-cluster"/>
                     </bean>
                 </property>
             </bean>

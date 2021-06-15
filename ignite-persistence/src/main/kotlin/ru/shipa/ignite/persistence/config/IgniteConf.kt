@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import ru.shipa.core.entity.ImageEntity
+import ru.shipa.ignite.persistence.domain.IgniteKafkaLifecycleBean
 import java.util.*
 
 @Configuration
@@ -82,26 +83,28 @@ class IgniteConf {
     @Bean
     fun provideIgniteConfiguration(
         @Qualifier("LocalDiscoverySpi") localDiscoverySpi: DiscoverySpi,
-        @Qualifier("KubernetesDiscoverySpi") kuberDiscoverySpi: DiscoverySpi
+        @Qualifier("KubernetesDiscoverySpi") kuberDiscoverySpi: DiscoverySpi,
+        igniteKafkaLifecycleBean: IgniteKafkaLifecycleBean
     ): IgniteConfiguration {
 
         return IgniteConfiguration().apply {
             igniteInstanceName = instanceName.toString()
             isPeerClassLoadingEnabled = true
+            isClientMode = clientMode
             dataStorageConfiguration = DataStorageConfiguration().apply {
 //                defaultDataRegionConfiguration.isPersistenceEnabled = true
             }
 
-            if (kuberMode) {
+            discoverySpi = if (kuberMode) {
                 println("Ignite config - kuber")
                 println(kuberDiscoverySpi)
-                discoverySpi = kuberDiscoverySpi
+                kuberDiscoverySpi
             } else {
                 println("Ignite config - local")
                 println(localDiscoverySpi)
-                isClientMode = clientMode
-                discoverySpi = localDiscoverySpi
+                localDiscoverySpi
             }
+            setLifecycleBeans(igniteKafkaLifecycleBean)
         }
     }
 

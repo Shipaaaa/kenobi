@@ -1,9 +1,12 @@
+# An example of a Kubernetes configuration for pod deployment.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  # Cluster name.
   name: ignite-cluster
-  namespace: ignite-server
+  namespace: ignite
 spec:
+  # The initial number of pods to be started by Kubernetes.
   replicas: 2
   selector:
     matchLabels:
@@ -13,11 +16,12 @@ spec:
       labels:
         app: ignite
     spec:
-      serviceAccountName: ignite
+      serviceAccountName: ignite-cluster-account
       terminationGracePeriodSeconds: 60000
       containers:
+        # Custom pod name.
         - name: ignite-node
-          image: apacheignite/ignite:2.10.0
+          image: apacheignite/ignite:2.9.1
           env:
             - name: OPTION_LIBS
               value: ignite-kubernetes,ignite-rest-http
@@ -35,6 +39,7 @@ spec:
           #   - configMapRef:
           #       name: ignite-config
           ports:
+            # Ports to open.
             - containerPort: 47100 # communication SPI port
             - containerPort: 47500 # discovery SPI port
             - containerPort: 49112 # dafault JMX port
