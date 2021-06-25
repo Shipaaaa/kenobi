@@ -130,17 +130,21 @@ sudo yum install java-1.8.0-openjdk
 
 ### Установка Spark
 
-#### Spark с версией Hadoop 2.7
+#### Spark 2.4.8 с версией Hadoop 2.7
 
 ```shell script
-wget https://downloads.apache.org/spark/spark-3.0.1/spark-3.0.1-bin-hadoop2.7.tgz
-tar xvf spark-3.0.1-bin-hadoop2.7.tgz
-sudo mv spark-3.0.1-bin-hadoop2.7 /opt/spark
+mkdir ~/install && cd ~/install
+wget https://apache-mirror.rbc.ru/pub/apache/spark/spark-2.4.8/spark-2.4.8-bin-hadoop2.7.tgz
+tar xvf spark-2.4.8-bin-hadoop2.7.tgz
+rm -rf spark-2.4.8-bin-hadoop2.7.tgz
+
+sudo mv spark-2.4.8-bin-hadoop2.7 /opt/spark-2.4.8-bin-hadoop2.7
+sudo ln -s /opt/spark-2.4.8-bin-hadoop2.7 /usr/local/spark
 
 cd /opt/spark
 ```
 
-#### Spark с версией Hadoop 3.2
+#### Spark 3.1.1 с версией Hadoop 3.2
 
 ```shell script
 mkdir ~/install && cd ~/install
@@ -148,8 +152,8 @@ wget https://mirror.linux-ia64.org/apache/spark/spark-3.1.1/spark-3.1.1-bin-hado
 tar xvf spark-3.1.1-bin-hadoop3.2.tgz
 rm -rf spark-3.1.1-bin-hadoop3.2.tgz
 
-sudo mv spark-3.1.1-bin-hadoop3.2 /opt/spark
-sudo ln -s /opt/spark /usr/local/spark
+sudo mv spark-3.1.1-bin-hadoop3.2 /opt/spark-3.1.1-bin-hadoop3.2
+sudo ln -s /opt/spark-3.1.1-bin-hadoop3.2 /usr/local/spark
 export SPARK_HOME=/usr/local/spark
 
 cd /opt/spark

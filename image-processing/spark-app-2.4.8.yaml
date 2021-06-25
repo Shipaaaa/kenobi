@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spark-app-config
+  namespace: default
+data:
+  WORK_DATE_TIME: '2021-06-18T22:15:00'
+  IGNITE_NAMESPACE: 'ignite'
+  IGNITE_SERVICE_NAME: 'ignite-cluster'
+  IGNITE_MASTER_URL: 'https://kubernetes.default.svc.cluster.local:443'
+  IGNITE_CACHE_NAME: 'images-cache'
+---
+apiVersion: "sparkoperator.k8s.io/v1beta2"
+kind: SparkApplication
+metadata:
+  name: spark-app
+  namespace: default
+spec:
+  type: Scala
+  mode: cluster
+  image: "docker.io/shipa/spark:latest"
+  imagePullPolicy: Always
+  mainClass: ru.shipa.image.processing.ImageProcessingApp
+  mainApplicationFile: "local:///opt/spark/image-processing-1.0-SNAPSHOT-all.jar"
+  sparkVersion: "2.4.8"
+  restartPolicy:
+    type: OnFailure
+    onFailureRetries: 3
+    onFailureRetryInterval: 10
+    onSubmissionFailureRetries: 5
+    onSubmissionFailureRetryInterval: 20
+  driver:
+    cores: 1
+    coreLimit: "1200m"
+    memory: "512m"
+    labels:
+      version: 2.4.8
+    serviceAccount: spark-with-ignite
+    env:
+      - name: "WORK_DATE_TIME"
+        value: "2021-06-18T22:15:00"
+    envFrom:
+      - configMapRef:
+          name: spark-app-config
+  executor:
+    cores: 1
+    instances: 1
+    memory: "512m"
+    labels:
+      version: 2.4.8
+    env:
+      - name: "WORK_DATE_TIME"
+        value: "2021-06-18T22:15:00"
+    envFrom:
+      - configMapRef:
+          name: spark-app-config

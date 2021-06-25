@@ -21,6 +21,12 @@ chmod 700 get_helm.sh
 
 ```shell
 helm install spark-app ~/spark-operator --namespace spark-operator --create-namespace --set sparkJobNamespace=default --set webhook.enable=true
+# or
+helm install spark-app ~/spark-operator --namespace spark-operator --create-namespace --set sparkJobNamespace=default --set webhook.enable=true --set image.tag=v1beta2-1.1.2-2.4.5
+
+# or 
+helm install spark-app ~/spark-operator --namespace spark-operator --create-namespace --set sparkJobNamespace=default --set webhook.enable=true --set image.tag=v1beta2-1.1.2-2.4.5
+helm install spark-app spark-operator/spark-operator --namespace spark-operator --create-namespace --set sparkJobNamespace=default --set webhook.enable=true --set image.tag=v1beta2-1.1.2-2.4.5 --version 1.0.6
 ```
 
 ```shell
