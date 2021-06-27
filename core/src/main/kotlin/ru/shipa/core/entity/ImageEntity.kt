@@ -11,6 +11,7 @@ import java.util.*
  */
 @Serializable
 data class ImageEntity(
+    val key: String,
     val name: String,
     val encodedImageBlob: String
 ) {
@@ -19,8 +20,9 @@ data class ImageEntity(
         /**
          * Parsing image to object.
          */
-        fun fromFile(file: File): ImageEntity {
+        fun fromFile(key: String, file: File): ImageEntity {
             return ImageEntity(
+                key = key,
                 name = file.name,
                 encodedImageBlob = Base64.getEncoder().encodeToString(file.readBytes())
             )

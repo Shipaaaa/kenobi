@@ -1,11 +1,11 @@
-package ru.shipa.ignite.persistence.presentation
+package ru.shipa.ignite.client.presentation
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import ru.shipa.core.entity.ImageEntity
-import ru.shipa.ignite.persistence.domain.ImagesInteractor
+import ru.shipa.ignite.client.domain.ImagesInteractor
 
 @RequestMapping("image")
 class ImagesController(private val imagesInteractor: ImagesInteractor) {
@@ -37,4 +37,21 @@ class ImagesController(private val imagesInteractor: ImagesInteractor) {
         val imageEntities = imagesInteractor.getAllImages()
         return ResponseEntity(imageEntities, HttpStatus.OK)
     }
+
+    @GetMapping(
+        path = ["/get/all/meta"],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun getAllImageMeta(): ResponseEntity<List<ImageEntity>> {
+        val imageNames = imagesInteractor.getAllImages().map { imageEntity ->
+            val shortBlob = imageEntity.encodedImageBlob.ellipsizeMiddle()
+            imageEntity.copy(encodedImageBlob = shortBlob)
+        }
+        return ResponseEntity(imageNames, HttpStatus.OK)
+    }
+
+    private fun String.ellipsizeMiddle(length: Int = 50): String {
+        return if (this.length > length) "${take(length / 2)}...${takeLast(length / 2)}" else this
+    }
 }
+

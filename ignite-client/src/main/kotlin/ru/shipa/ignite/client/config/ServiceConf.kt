@@ -1,4 +1,4 @@
-package ru.shipa.ignite.persistence.config
+package ru.shipa.ignite.client.config
 
 import org.apache.ignite.Ignite
 import org.apache.ignite.configuration.CacheConfiguration
@@ -7,11 +7,11 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import ru.shipa.core.entity.ImageEntity
-import ru.shipa.ignite.persistence.data.ImagesRepository
-import ru.shipa.ignite.persistence.domain.IgniteKafkaLifecycleBean
-import ru.shipa.ignite.persistence.domain.ImagesInteractor
-import ru.shipa.ignite.persistence.presentation.HealthController
-import ru.shipa.ignite.persistence.presentation.ImagesController
+import ru.shipa.ignite.client.data.ImagesRepository
+import ru.shipa.ignite.client.domain.IgniteKafkaLifecycleBean
+import ru.shipa.ignite.client.domain.ImagesInteractor
+import ru.shipa.ignite.client.presentation.HealthController
+import ru.shipa.ignite.client.presentation.ImagesController
 
 @Configuration
 @Import(IgniteConf::class)

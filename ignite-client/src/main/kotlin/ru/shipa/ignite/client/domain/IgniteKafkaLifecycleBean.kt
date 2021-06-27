@@ -1,4 +1,4 @@
-package ru.shipa.ignite.persistence.domain
+package ru.shipa.ignite.client.domain
 
 import org.apache.ignite.Ignite
 import org.apache.ignite.IgniteDataStreamer

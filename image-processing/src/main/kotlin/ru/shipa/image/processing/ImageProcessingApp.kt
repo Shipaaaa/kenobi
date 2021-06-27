@@ -10,6 +10,8 @@ import org.apache.ignite.configuration.IgniteConfiguration
 import org.apache.ignite.spark.JavaIgniteContext
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi
 import org.apache.ignite.spi.discovery.tcp.ipfinder.kubernetes.TcpDiscoveryKubernetesIpFinder
+import org.apache.log4j.Level
+import org.apache.log4j.Logger
 import org.apache.spark.api.java.JavaSparkContext
 import ru.shipa.core.entity.ImageEntity
 import ru.shipa.image.processing.ImageProcessingApp.main
@@ -33,25 +35,28 @@ object ImageProcessingApp {
     private val WORK_DATE_TIME = System.getenv("WORK_DATE_TIME")
     private val IGNITE_NAMESPACE = System.getenv("IGNITE_NAMESPACE") ?: "ignite"
     private val IGNITE_SERVICE_NAME = System.getenv("IGNITE_SERVICE_NAME") ?: "ignite-cluster"
-    private val IGNITE_MASTER_URL = System.getenv("IGNITE_MASTER_URL") ?: "https://kubernetes.default.svc.cluster.local:443"
+    private val IGNITE_MASTER_URL =
+        System.getenv("IGNITE_MASTER_URL") ?: "https://kubernetes.default.svc.cluster.local:443"
     private val IGNITE_CACHE_NAME = System.getenv("IGNITE_CACHE_NAME") ?: "images-cache"
 
     private val instanceName: UUID = UUID.randomUUID()
 
+    private val logger: Logger = Logger.getLogger("ImageProcessingApp")
+
     @JvmStatic
     fun main(args: Array<String>) {
         val currentTime = LocalDateTime.now()
-        println("[${currentTime}]: start app")
+        logger.log(Level.INFO, "[${currentTime}]: start app")
 
         val workDateTimeString = WORK_DATE_TIME
         val workTime = LocalDateTime.parse(workDateTimeString, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-        println("[${workTime}]: wait until")
+        logger.log(Level.INFO, "[${workTime}]: wait until")
 
         val waitTime = Duration.between(currentTime, workTime).toMillis()
-        println("Wait millis: $waitTime")
+        logger.log(Level.INFO, "Wait millis: $waitTime")
 
         TimeUnit.MILLISECONDS.sleep(waitTime)
-        println("[${LocalDateTime.now()}]: start work")
+        logger.log(Level.INFO, "[${LocalDateTime.now()}]: start work")
 
         startSpark()
     }
@@ -72,23 +77,27 @@ object ImageProcessingApp {
                 isPeerClassLoadingEnabled = true
                 isClientMode = true
 
-                println("Ignite config - kuber")
-                println(kuberDiscoverySpi)
+                logger.log(Level.INFO, "Ignite config - kuber")
+                logger.log(Level.INFO, kuberDiscoverySpi)
                 discoverySpi = kuberDiscoverySpi
             }
         }
         val cache = igniteContext.fromCache(IGNITE_CACHE_NAME)
 
-        println("cache foreach:")
+        logger.log(Level.INFO, "cache size ${cache.count()}")
+
+        logger.log(Level.INFO, "cache foreach:")
         cache.foreach { tuple ->
-            println("tuple: (${tuple._1},${tuple._2.name})")
+            logger.log(Level.INFO, "tuple: (${tuple._1},${tuple._2.name})")
             processImage(tuple._2)
         }
 
+        logger.log(Level.INFO, "igniteContext.close")
         igniteContext.close(true)
     }
 
     private fun processImage(image: ImageEntity) {
+        logger.log(Level.INFO, "start image processing: ${image.key}-${image.name}")
         val decodedImage = Base64.getDecoder().decode(image.encodedImageBlob)
         val originalImage = ImmutableImage.loader().fromBytes(decodedImage)
 
@@ -102,6 +111,8 @@ object ImageProcessingApp {
         grayImage
             .composite(ColorDodgeComposite(.9), blurImage)
             .copy(TYPE_INT_ARGB)
-            .forWriter(JpegWriter.Default).write("contrast_2.0.jpg")
+            .forWriter(JpegWriter.Default).write("${image.key}-${image.name}.jpg")
+
+        logger.log(Level.INFO, "image processing done: ${image.key}-${image.name}")
     }
 }

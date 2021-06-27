@@ -15,11 +15,11 @@ class ImagesRepository(
     }
 
     fun put(imageEntity: ImageEntity) {
-        ignite.getOrCreateCache(imagesCacheConfiguration).put(imageEntity.name, imageEntity)
+        ignite.getOrCreateCache(imagesCacheConfiguration).put(imageEntity.key, imageEntity)
     }
 
-    operator fun get(id: String): ImageEntity {
-        return ignite.getOrCreateCache(imagesCacheConfiguration).get(id)
+    operator fun get(key: String): ImageEntity {
+        return ignite.getOrCreateCache(imagesCacheConfiguration)[key]
     }
 
     fun getAll(): List<ImageEntity> {

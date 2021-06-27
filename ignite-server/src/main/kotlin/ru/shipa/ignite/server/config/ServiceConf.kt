@@ -9,6 +9,7 @@ import ru.shipa.core.entity.ImageEntity
 import ru.shipa.ignite.server.data.ImagesRepository
 import ru.shipa.ignite.server.domain.ImagesInteractor
 import ru.shipa.ignite.server.presentation.HealthController
+import ru.shipa.ignite.server.presentation.ImagesController
 
 @Configuration
 @Import(IgniteConf::class)
@@ -25,6 +26,11 @@ class ServiceConf {
     @Bean
     fun provideImagesInteractor(imagesRepository: ImagesRepository): ImagesInteractor {
         return ImagesInteractor(imagesRepository)
+    }
+
+    @Bean
+    fun provideImagesController(imagesInteractor: ImagesInteractor): ImagesController {
+        return ImagesController(imagesInteractor)
     }
 
     @Bean

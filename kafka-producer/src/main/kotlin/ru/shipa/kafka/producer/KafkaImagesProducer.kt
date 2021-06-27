@@ -29,8 +29,8 @@ class KafkaImagesProducer(
      */
     fun sendData(data: Sequence<File>) {
         data
-            .map { ImageEntity.fromFile(it) }
-            .map { ProducerRecord(TOPIC_NAME, keyGenerator(), it) }
+            .map { ImageEntity.fromFile(keyGenerator(), it) }
+            .map { ProducerRecord(TOPIC_NAME, it.key, it) }
             .forEach { record ->
                 producer.send(record) { metadata, exception ->
                     metadata?.let { logger.debug("Message has been sent to topic: ${metadata.topic()}") }

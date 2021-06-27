@@ -5,6 +5,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import ru.shipa.ignite.server.data.ImagesRepository
 import ru.shipa.ignite.server.domain.ImagesInteractor
 import ru.shipa.ignite.server.domain.model.HealthEntity
 

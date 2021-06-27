@@ -1,4 +1,4 @@
-package ru.shipa.ignite.persistence
+package ru.shipa.ignite.client
 
 import org.apache.ignite.Ignition
 import org.apache.ignite.cluster.ClusterState

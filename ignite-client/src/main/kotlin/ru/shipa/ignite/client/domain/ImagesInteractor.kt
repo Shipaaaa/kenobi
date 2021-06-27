@@ -1,7 +1,7 @@
-package ru.shipa.ignite.persistence.domain
+package ru.shipa.ignite.client.domain
 
 import ru.shipa.core.entity.ImageEntity
-import ru.shipa.ignite.persistence.data.ImagesRepository
+import ru.shipa.ignite.client.data.ImagesRepository
 
 class ImagesInteractor(private val imagesRepository: ImagesRepository) {
 

@@ -1,11 +1,10 @@
-package ru.shipa.ignite.persistence.config
+package ru.shipa.ignite.client.config
 
 import org.apache.ignite.Ignite
 import org.apache.ignite.IgniteSpringBean
 import org.apache.ignite.cache.CacheAtomicityMode
 import org.apache.ignite.cache.CacheMode
 import org.apache.ignite.configuration.CacheConfiguration
-import org.apache.ignite.configuration.DataStorageConfiguration
 import org.apache.ignite.configuration.IgniteConfiguration
 import org.apache.ignite.spi.discovery.DiscoverySpi
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi
@@ -17,7 +16,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import ru.shipa.core.entity.ImageEntity
-import ru.shipa.ignite.persistence.domain.IgniteKafkaLifecycleBean
+import ru.shipa.ignite.client.domain.IgniteKafkaLifecycleBean
 import java.util.*
 
 @Configuration
@@ -91,9 +90,9 @@ class IgniteConf {
             igniteInstanceName = instanceName.toString()
             isPeerClassLoadingEnabled = true
             isClientMode = clientMode
-            dataStorageConfiguration = DataStorageConfiguration().apply {
-//                defaultDataRegionConfiguration.isPersistenceEnabled = true
-            }
+            /* dataStorageConfiguration = DataStorageConfiguration().apply {
+                defaultDataRegionConfiguration.isPersistenceEnabled = true
+            }*/
 
             discoverySpi = if (kuberMode) {
                 println("Ignite config - kuber")

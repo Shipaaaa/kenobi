@@ -88,9 +88,9 @@ class IgniteConf {
         return IgniteConfiguration().apply {
             igniteInstanceName = instanceName.toString()
             isPeerClassLoadingEnabled = true
-            dataStorageConfiguration = DataStorageConfiguration().apply {
-//                defaultDataRegionConfiguration.isPersistenceEnabled = true
-            }
+            /* dataStorageConfiguration = DataStorageConfiguration().apply {
+                defaultDataRegionConfiguration.isPersistenceEnabled = true
+            }*/
 
             discoverySpi = if (kuberMode) {
                 println("Ignite config - kuber")

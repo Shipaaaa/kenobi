@@ -2,6 +2,6 @@ rootProject.name = "kenobi"
 
 include("core")
 include("kafka-producer")
-include("ignite-persistence")
+include("ignite-client")
 include("ignite-server")
 include("image-processing")

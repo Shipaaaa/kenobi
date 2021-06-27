@@ -1,4 +1,4 @@
-package ru.shipa.ignite.persistence.data
+package ru.shipa.ignite.client.data
 
 import org.apache.ignite.Ignite
 import org.apache.ignite.configuration.CacheConfiguration
@@ -15,15 +15,14 @@ class ImagesRepository(
     }
 
     fun put(imageEntity: ImageEntity) {
-        ignite.getOrCreateCache(imagesCacheConfiguration).put(imageEntity.name, imageEntity)
+        ignite.getOrCreateCache(imagesCacheConfiguration).put(imageEntity.key, imageEntity)
     }
 
-    operator fun get(id: String): ImageEntity {
-        return ignite.getOrCreateCache(imagesCacheConfiguration).get(id)
+    operator fun get(key: String): ImageEntity {
+        return ignite.getOrCreateCache(imagesCacheConfiguration)[key]
     }
 
     fun getAll(): List<ImageEntity> {
-        return ignite.getOrCreateCache(imagesCacheConfiguration)
-            .map { it.value }
+        return ignite.getOrCreateCache(imagesCacheConfiguration).map { it.value }
     }
 }
