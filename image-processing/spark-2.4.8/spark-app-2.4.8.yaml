@@ -36,21 +36,21 @@ spec:
     labels:
       version: 2.4.8
     serviceAccount: spark-with-ignite
-    env:
-      - name: "WORK_DATE_TIME"
-        value: "2021-06-18T22:15:00"
     envFrom:
       - configMapRef:
           name: spark-app-config
   executor:
     cores: 1
     instances: 1
-    memory: "512m"
+    memory: "4096m"
     labels:
       version: 2.4.8
-    env:
-      - name: "WORK_DATE_TIME"
-        value: "2021-06-18T22:15:00"
     envFrom:
       - configMapRef:
           name: spark-app-config
+  monitoring:
+    exposeDriverMetrics: true
+    exposeExecutorMetrics: true
+    prometheus:
+      jmxExporterJar: "/prometheus/jmx_prometheus_javaagent-0.11.0.jar"
+      port: 8090

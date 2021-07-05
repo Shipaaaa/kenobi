@@ -29,10 +29,6 @@ spec:
     onFailureRetryInterval: 10
     onSubmissionFailureRetries: 5
     onSubmissionFailureRetryInterval: 20
-  volumes:
-    - name: config-vol
-      configMap:
-        name: spark-app-config
   driver:
     cores: 1
     coreLimit: "1200m"
@@ -40,15 +36,21 @@ spec:
     labels:
       version: 2.4.8
     serviceAccount: spark-with-ignite
-    volumeMounts:
-      - name: config-vol
-        mountPath: /opt/spark/mycm
+    envFrom:
+      - configMapRef:
+          name: spark-app-config
   executor:
     cores: 1
     instances: 1
-    memory: "512m"
+    memory: "4096m"
     labels:
       version: 2.4.8
-    volumeMounts:
-      - name: config-vol
-        mountPath: /opt/spark/mycm
+    envFrom:
+      - configMapRef:
+          name: spark-app-config
+  monitoring:
+    exposeDriverMetrics: true
+    exposeExecutorMetrics: true
+    prometheus:
+      jmxExporterJar: "/prometheus/jmx_prometheus_javaagent-0.11.0.jar"
+      port: 8090

@@ -17,6 +17,7 @@ import ru.shipa.core.entity.ImageEntity
 import ru.shipa.image.processing.ImageProcessingApp.main
 import java.awt.image.BufferedImage.TYPE_INT_ARGB
 import java.awt.image.BufferedImage.TYPE_INT_ARGB_PRE
+import java.io.File
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -114,5 +115,20 @@ object ImageProcessingApp {
             .forWriter(JpegWriter.Default).write("${image.key}-${image.name}.jpg")
 
         logger.log(Level.INFO, "image processing done: ${image.key}-${image.name}")
+    }
+
+    private fun localProcessing() {
+        readFiles("/Users/ruasgvl/Developer/git/mephi/kenobi/image-processing/images")
+            .map { ImageEntity.fromFile(UUID.randomUUID().toString(), it) }
+            .forEach { processImage(it) }
+    }
+
+    private fun readFiles(imgDirPath: String): Sequence<File> {
+        println("Reading images...")
+
+        return File(imgDirPath)
+            .walkTopDown()
+            .filter { !it.isDirectory }
+            .apply { forEach { file -> println("Images name: ${file.name}") } }
     }
 }
